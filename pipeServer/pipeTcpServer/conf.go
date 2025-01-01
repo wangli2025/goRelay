@@ -7,6 +7,7 @@ import (
 )
 
 var relayConn net.Conn = nil
-var clientConn net.Conn = nil
+var clientConnMap map[string]net.Conn
+var clientConnMapLock sync.Mutex
 var sendLock sync.Mutex
-var goLog pkg.Logger
+var goLog *pkg.Logger

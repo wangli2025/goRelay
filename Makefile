@@ -1,6 +1,7 @@
 
 VERSION ?= "0.0.1"
 GITCOMMIT ?= ""
+BuildAt ?= ""
 
 BIN_DIR = ./bin
 ARCHIVE_NAME := pipeSource$(VERSION).tar.gz
@@ -14,10 +15,10 @@ $(BIN_DIR):
 
 build:
 	@echo "build project"
-	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/pipeServer pipeServer/*.go
-	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/pipeClient pipeClient/*.go
-	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/relayServer relayServer/*.go
-	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/relayClient relayClient/*.go
+	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.BuildAt=$(BuildAt) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/pipeServer pipeServer/*.go
+	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.BuildAt=$(BuildAt) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/pipeClient pipeClient/*.go
+	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.BuildAt=$(BuildAt) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/relayServer relayServer/*.go
+	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.BuildAt=$(BuildAt) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/relayClient relayClient/*.go
 	tar zcvf $(ARCHIVE_NAME) $(BIN_DIR)
 
 clean:

@@ -11,7 +11,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version:", pkg.Version, "gitCommit:", pkg.GitCommit)
+		fmt.Println("version:", pkg.Version, "buildAt:", pkg.BuildAt, "gitCommit:", pkg.GitCommit)
 		return
 	}
 
@@ -19,14 +19,20 @@ func main() {
 		flag.Usage()
 		return
 	}
+	var config Config
+	if pkg.LoadConfig(configFile, &config) != nil {
+		fmt.Println("read config file error")
+		return
+	}
+	fmt.Println("config:", config)
 
 	goLog := pkg.NewLogger()
-	if debugLog {
+	if config.DebugLog {
 		goLog.SetLogger(pkg.DebugLevel)
 	} else {
 		goLog.SetLogger(pkg.LogLevel)
 	}
 
-	pipeserver.ListenTcpServer(pipeServerAddress)
+	pipeserver.ListenTcpServer(config.ListenPipeServerAddr, config.WhiteIpList, config.BlackIpList)
 
 }

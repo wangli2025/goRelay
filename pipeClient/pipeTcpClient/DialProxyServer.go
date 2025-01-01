@@ -15,7 +15,7 @@ func ConnectToRelay(addr string) {
 			time.Sleep(time.Duration(sleepTimeSec) * time.Second)
 			continue
 		}
-		goLog.Info("Dial ", addr, "successful")
+		goLog.Info("Dial ", addr, " successful")
 
 		relayWorker(clientConnection)
 	}

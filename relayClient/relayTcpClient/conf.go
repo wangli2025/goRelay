@@ -9,7 +9,7 @@ import (
 
 var (
 	clientConnections   map[string]pipeprotocol.ClientInfo
-	goLog               pkg.Logger
+	goLog               *pkg.Logger
 	clientMapMutex      sync.Mutex
 	relayConn           net.Conn
 	clientCheckInterval int   = 1440

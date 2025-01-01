@@ -3,17 +3,33 @@ package main
 import "flag"
 
 var (
-	realServer string
-	listenAddr string
+	configFile string
 	version    bool
 	help       bool
-	debugLog   bool
 )
 
+//	type Config struct {
+//		Id                    string   `json:"id"`
+//		RealServerAddr        string   `json:"real_Server_Addr"`
+//		ListenRelayClientAddr string   `json:"listen_relay_client_addr"`
+//		WhiteIpList           []string `json:"white_ip_list"`
+//		DebugLog              bool     `json:"debug_log"`
+//	}
+
+type Config struct {
+	ListenRelayClientAddr string       `json:"listen_relay_client_addr"`
+	WhiteIpList           []string     `json:"white_ip_list"`
+	DebugLog              bool         `json:"debug_log"`
+	RealServerInfo        []RealServer `json:"realServerInfo"`
+}
+
+type RealServer struct {
+	ID             string `json:"id"`
+	RealServerAddr string `json:"real_Server_Addr"`
+}
+
 func init() {
-	flag.StringVar(&realServer, "realServer", "127.0.0.1:80", "real server")
-	flag.StringVar(&listenAddr, "listenAddr", ":10011", "listen addr")
+	flag.StringVar(&configFile, "config", "./pipeserver.json", "pipe server conf")
 	flag.BoolVar(&version, "version", false, "version")
 	flag.BoolVar(&help, "help", false, "help")
-	flag.BoolVar(&debugLog, "debug", false, "debug log")
 }

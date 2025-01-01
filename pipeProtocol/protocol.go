@@ -6,6 +6,7 @@ import (
 )
 
 type ClientProtocolInfo struct {
+	Id   string `json:"id"`
 	Conn string `json:conn1`
 	Buf  []byte `json:"buf"`
 }

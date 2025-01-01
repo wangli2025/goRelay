@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func RunTcpServer(addr string) {
+func RunTcpServer(addr string, whitelist []string, id string) {
 	listen, err := net.Listen("tcp", addr)
 	if err != nil {
 		goLog.Error("listen ", addr, " error ", err)
@@ -22,12 +22,19 @@ func RunTcpServer(addr string) {
 			goLog.Error("accept error", err)
 			continue
 		}
-		go worker(conn)
+		go worker(conn, whitelist, id)
 	}
 }
 
-func worker(conn net.Conn) {
+func worker(conn net.Conn, whitelist []string, id string) {
 	goLog.Debug(conn.RemoteAddr().String(), " is connection")
+
+	defer conn.Close()
+
+	if !pkg.IsWhitelisted(conn.RemoteAddr().String(), whitelist) {
+		goLog.Debug(conn.RemoteAddr().String(), " not while list")
+		return
+	}
 
 	func() {
 		clientMapLock.Lock()
@@ -37,6 +44,14 @@ func worker(conn net.Conn) {
 		cInfo.Time = time.Now().Unix()
 		clientMap[conn.RemoteAddr().String()] = cInfo
 	}()
+	defer func() {
+		clientMapLock.Lock()
+		defer clientMapLock.Unlock()
+		delete(clientMap, conn.RemoteAddr().String())
+	}()
+
+	conn.SetReadDeadline(time.Now().Add(time.Hour * 12))
+	conn.SetWriteDeadline(time.Now().Add(time.Hour * 12))
 
 	for {
 		buf := make([]byte, pipeprotocol.MaxPackageLen)
@@ -46,20 +61,17 @@ func worker(conn net.Conn) {
 				goLog.Error("conn read relay server error,error: ", err)
 			}
 
-			func() {
-				clientMapLock.Lock()
-				defer clientMapLock.Unlock()
-				delete(clientMap, conn.RemoteAddr().String())
-			}()
 			break
 		}
 
 		msg := buf[:n]
 		var p pipeprotocol.ClientProtocolInfo
+		p.Id = id
 		p.Conn = conn.RemoteAddr().String()
 		p.Buf = append(p.Buf, msg...)
 
 		jsonBuf, err := pkg.JsonMarshal(p)
+		goLog.Debug("json data: ", string(jsonBuf))
 		if err != nil {
 			goLog.Error("json marshal error", err)
 			return

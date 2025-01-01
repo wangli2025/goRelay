@@ -20,17 +20,20 @@ func main() {
 		return
 	}
 
+	var config Config
+	if pkg.LoadConfig(configFile, &config) != nil {
+		fmt.Println("read config file error")
+		return
+	}
+	fmt.Println("config:", config)
+
 	goLog := pkg.NewLogger()
-	if debugLog {
+	if config.DebugLog {
 		goLog.SetLogger(pkg.DebugLevel)
 	} else {
 		goLog.SetLogger(pkg.LogLevel)
 	}
+	go relaytcpserver.ConnectPipeServer(config.PipeServerAddr)
 
-	go relaytcpserver.DeleteHistoryClientMessage()
-
-	go relaytcpserver.ConnectPipeServer(pipeServerAddr)
-
-	relaytcpserver.RunTcpServer(listenAddr)
-
+	relaytcpserver.RunTcpServer(config.ListenRelayServerAddr, config.WhiteIpList, config.Id)
 }

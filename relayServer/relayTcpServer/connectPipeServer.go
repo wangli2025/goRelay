@@ -33,6 +33,7 @@ func relayWorker(pipeClient net.Conn) {
 		var p pipeprotocol.ClientProtocolInfo
 		pkg.JsonUnmarshal(msg, &p)
 		goLog.Debug(p.Conn, " The message has returned.")
+		goLog.Debug("p.id: ", p.Id)
 
 		cInfo, isok := clientMap[p.Conn]
 		if !isok {

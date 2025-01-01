@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	goLog            pkg.Logger
+	goLog            *pkg.Logger
 	clientConnection net.Conn
 	pipeClientConn   net.Conn
 	err              error

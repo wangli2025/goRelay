@@ -2,21 +2,19 @@ package pkg
 
 import (
 	"fmt"
-	"os"
 	"runtime"
-
-	"github.com/sirupsen/logrus"
+	"time"
 )
 
 type Logger struct {
-	log   *logrus.Logger
-	level int
+	Level int
 }
 
 var Log Logger
 
 const (
-	PanicLevel = iota
+	NoneLevel = iota
+	PanicLevel
 	FatalLevel
 	ErrorLevel
 	WarnLevel
@@ -25,11 +23,8 @@ const (
 	TraceLevel
 )
 
-func NewLogger() Logger {
-	if Log.log == nil {
-		Log.log = logrus.New()
-	}
-	return Log
+func NewLogger() *Logger {
+	return &Log
 }
 
 func (l Logger) loggerHandle() (string, int) {
@@ -38,55 +33,59 @@ func (l Logger) loggerHandle() (string, int) {
 }
 
 func newLine(file string, line int, args ...interface{}) string {
-	return fmt.Sprintf("%s:%d %s", file, line, fmt.Sprint(args...))
+	nowTime := time.Now().Format("2006-01-02T15:04:05")
+	return fmt.Sprintf("%s %s:%d %s", nowTime, file, line, fmt.Sprint(args...))
 }
 
-func (l Logger) SetLogger(level int) {
-	l.level = level
-	l.log.SetLevel(logrus.Level(l.level))
-	l.log.SetFormatter(&logrus.TextFormatter{})
-	l.log.SetOutput(os.Stdout)
-
-	l.log.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp: true,
-	})
-}
-
-func (l Logger) GetLevel() int {
-	return int(l.log.Level)
+func (l *Logger) SetLogger(level int) {
+	l.Level = level
 }
 
 func (l Logger) Panic(args ...interface{}) {
 	file, line := l.loggerHandle()
-	l.log.Panic(newLine(file, line, args...))
+	if l.Level >= PanicLevel {
+		fmt.Println("[Panic]", newLine(file, line, args...))
+	}
 }
 
 func (l Logger) Fatal(args ...interface{}) {
 	file, line := l.loggerHandle()
-	l.log.Fatal(newLine(file, line, args...))
+	if l.Level >= FatalLevel {
+		fmt.Println("[Fatal] ", newLine(file, line, args...))
+	}
 }
 
 func (l Logger) Error(args ...interface{}) {
 	file, line := l.loggerHandle()
-	l.log.Error(newLine(file, line, args...))
+	if l.Level >= ErrorLevel {
+		fmt.Println("[Error] ", newLine(file, line, args...))
+	}
 }
 
 func (l Logger) Warn(args ...interface{}) {
 	file, line := l.loggerHandle()
-	l.log.Warn(newLine(file, line, args...))
+	if l.Level >= WarnLevel {
+		fmt.Println("[Warn] ", newLine(file, line, args...))
+	}
 }
 
 func (l Logger) Info(args ...interface{}) {
 	file, line := l.loggerHandle()
-	l.log.Info(newLine(file, line, args...))
+	if l.Level >= InfoLevel {
+		fmt.Println("[Info] ", newLine(file, line, args...))
+	}
 }
 
 func (l Logger) Debug(args ...interface{}) {
 	file, line := l.loggerHandle()
-	l.log.Debug(newLine(file, line, args...))
+	if l.Level >= DebugLevel {
+		fmt.Println("[Debug] ", newLine(file, line, args...))
+	}
 }
 
 func (l Logger) Trace(args ...interface{}) {
 	file, line := l.loggerHandle()
-	l.log.Trace(newLine(file, line, args...))
+	if l.Level >= TraceLevel {
+		fmt.Println("[Trace] ", newLine(file, line, args...))
+	}
 }

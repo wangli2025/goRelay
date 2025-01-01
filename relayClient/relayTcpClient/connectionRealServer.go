@@ -5,10 +5,20 @@ import (
 	"goRelay/pkg"
 	"io"
 	"net"
+	"time"
 )
 
-func connectionRealServer(realServerConn net.Conn, pConn string) {
+func connectionRealServer(realServerConn net.Conn, pConn string, id string) {
 	goLog.Debug("connection real server ", realServerConn.RemoteAddr().String())
+
+	realServerConn.SetReadDeadline(time.Now().Add(time.Hour * 12))
+	realServerConn.SetWriteDeadline(time.Now().Add(time.Hour * 12))
+
+	defer func() {
+		clientMapMutex.Lock()
+		defer clientMapMutex.Unlock()
+		delete(clientConnections, pConn)
+	}()
 
 	for {
 		buf := make([]byte, pipeprotocol.MaxPackageLen)
@@ -29,6 +39,7 @@ func connectionRealServer(realServerConn net.Conn, pConn string) {
 		msg := buf[:n]
 
 		var p pipeprotocol.ClientProtocolInfo
+		p.Id = id
 		p.Buf = append(p.Buf, msg...)
 		p.Conn = pConn
 
