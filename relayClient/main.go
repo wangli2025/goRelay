@@ -1,25 +1,12 @@
-package main
+package relayclient_main
 
 import (
-	"flag"
 	"fmt"
 	"goRelay/pkg"
 	relaytcpclient "goRelay/relayClient/relayTcpClient"
 )
 
-func main() {
-
-	flag.Parse()
-
-	if version {
-		fmt.Println("version:", pkg.Version, "gitCommit:", pkg.GitCommit)
-		return
-	}
-
-	if help {
-		flag.Usage()
-		return
-	}
+func RunRelayClientServer(configFile string) {
 
 	var config Config
 	if pkg.LoadConfig(configFile, &config) != nil {

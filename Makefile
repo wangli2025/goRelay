@@ -15,16 +15,10 @@ $(BIN_DIR):
 
 build:
 	@echo "build project"
-	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.BuildAt=$(BuildAt) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/pipeServer pipeServer/*.go
-	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.BuildAt=$(BuildAt) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/pipeClient pipeClient/*.go
-	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.BuildAt=$(BuildAt) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/relayServer relayServer/*.go
-	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.BuildAt=$(BuildAt) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/relayClient relayClient/*.go
+	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.BuildAt=$(BuildAt) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/goRelay 
 	tar zcvf $(ARCHIVE_NAME) $(BIN_DIR)
 
 clean:
 	@echo "cleaning up..."
-	rm -f $(BIN_DIR)/pipeServer
-	rm -f $(BIN_DIR)/pipeClient
-	rm -f $(BIN_DIR)/relayServer
-	rm -f $(BIN_DIR)/relayClient
+	rm -f $(BIN_DIR)/goRelay
 

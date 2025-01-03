@@ -1,24 +1,12 @@
-package main
+package pipeclient_main
 
 import (
-	"flag"
 	"fmt"
 	pipetcpclient "goRelay/pipeClient/pipeTcpClient"
 	"goRelay/pkg"
 )
 
-func main() {
-	flag.Parse()
-
-	if version {
-		fmt.Println("version:", pkg.Version, "gitCommit:", pkg.GitCommit)
-		return
-	}
-
-	if help {
-		flag.Usage()
-		return
-	}
+func RunPipeClientServer(configFile string) {
 
 	var config Config
 	if pkg.LoadConfig(configFile, &config) != nil {

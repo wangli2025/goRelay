@@ -1,62 +1,62 @@
-Here is the translation of your document into English in Markdown format:
-
 # goRelay
 
-`goRelay` is a TCP-based **internal network penetration** tool written in `Go`.
+`goRelay` is a TCP-based **intranet penetration** tool written in `go`.
 
 ### Background:
-When you need to map the port of an internal machine to be accessible from the public network, you can use this tool. It provides end-to-end communication functionality.
+This tool is used when there is a need to map a port on an internal network machine to the public internet for access. It provides end-to-end communication functionality.
 
-### Usage Limitations:
+### Requirements:
 At least one machine with a public IP address is required to use this tool.
 
-### Latest Features:
+### Latest Feature:
 Supports port reuse.
 
 ## Deployment Diagram
 
 ![Flowchart](img/d4.png)
 
-## How to Obtain the Executable Files
+## How to Obtain the Executable
 
-### From Published Versions:
-You can obtain the following servers from the published versions:
-- `relayServer`: The relay server is used to receive and send data and should be deployed in the internal network environment requested by the client. Multiple instances can be deployed to support port reuse.
-- `pipeServer`: The pipe server is used for data transmission and should be deployed on a server with a public `IP`.
-- `pipeClient`: The pipe client is used for user data transmission and should be deployed in the internal network where the real service resides.
-- `relayClient`: The relay client is used to receive and send data and should be deployed in the internal network where the real service resides. It needs to be configured with `relayServer` information to support port reuse.
+### From Released Versions
 
-### Compile to Obtain:
-After cloning this repository, compile using `bash build.sh` + version number, for example:
+You can obtain the following executable files from the released versions:
+
+`goRelay` is an executable that distinguishes server types using the `--type` flag. The specific types are:
+
+- `relayServer`: A relay server used for receiving and sending data. It needs to be deployed in the intranet environment where client requests are made. Multiple instances can be deployed to support port reuse.
+- `pipeServer`: A pipe server used for data transmission. It needs to be deployed on a server with a public IP address.
+- `pipeClient`: A pipe client used for user data transmission. It needs to be deployed in the real service's intranet environment.
+- `relayClient`: A relay client used for receiving and sending data. It needs to be deployed in the real service's intranet environment. You need to configure the `relayServer` information to support port reuse.
+
+### Compilation
+
+Clone the repository, then compile by running `bash build.sh` with the version number, e.g.:
+
 ```bash
-$ bash build.sh v0.0.1
+➜  goRelay git:(main) ✗ bash build.sh v0.0.1
 build project
-go build -ldflags "-X goRelay/pkg.Version=v0.0.1 -X goRelay/pkg.BuildAt=2024-12-28 -X goRelay/pkg.GitCommit=9a4bcb7f2eaf9c6b820f42b6b8758d986b38fd1f" -o ./bin/pipeServer pipeServer/*.go
-go build -ldflags "-X goRelay/pkg.Version=v0.0.1 -X goRelay/pkg.BuildAt=2024-12-28 -X goRelay/pkg.GitCommit=9a4bcb7f2eaf9c6b820f42b6b8758d986b38fd1f" -o ./bin/pipeClient pipeClient/*.go
-go build -ldflags "-X goRelay/pkg.Version=v0.0.1 -X goRelay/pkg.BuildAt=2024-12-28 -X goRelay/pkg.GitCommit=9a4bcb7f2eaf9c6b820f42b6b8758d986b38fd1f" -o ./bin/relayServer relayServer/*.go
-go build -ldflags "-X goRelay/pkg.Version=v0.0.1 -X goRelay/pkg.BuildAt=2024-12-28 -X goRelay/pkg.GitCommit=9a4bcb7f2eaf9c6b820f42b6b8758d986b38fd1f" -o ./bin/relayClient relayClient/*.go
+go build -ldflags "-X goRelay/pkg.Version=v0.0.1 -X goRelay/pkg.BuildAt=2025-01-04 -X goRelay/pkg.GitCommit=9002ae53fff26c433cdcde76abed1781c3cc218a" -o ./bin/goRelay 
 tar zcvf pipeSourcev0.0.1.tar.gz ./bin
 ./bin/
-./bin/pipeClient
-./bin/pipeServer
-./bin/relayClient
-./bin/relayServer
-$
+./bin/goRelay
+➜  goRelay git:(main) ✗ 
 ```
 
-After compilation, the corresponding binary files will be generated in `./bin/`:
+After compiling, the corresponding binary files will be generated in the `./bin/` directory.
+
 ```bash
-$ ls bin/
-pipeClient  pipeServer  relayClient  relayServer
-$
+➜  goRelay git:(main) ✗ ls bin/
+goRelay
+➜  goRelay git:(main) ✗ 
 ```
 
 ## How to Run
 
 ### `pipeServer`
-`pipeServer` is the pipe server used for data transmission and should be deployed on a server with a public `IP`.
 
-To start this service, you need to create a configuration file, for example, `conf_pipeServer.json`:
+`pipeServer` is the pipe server used for data transmission. It needs to be deployed on a server with a public IP address.
+
+To start this service, first create a configuration file, such as `conf_pipeServer.json`:
 
 ```json
 {
@@ -71,22 +71,26 @@ To start this service, you need to create a configuration file, for example, `co
 }
 ```
 
-- `listen_pipe_server_addr` is the address to listen on externally. If you want to listen on a specific network interface, specify the interface address, such as `192.168.2.3:8888`.
-- `white_ip_list` is the whitelist. Only IPs in the list are allowed to connect. If empty, no whitelist is set and any IP can connect.
-- `black_ip_list` is a set blacklist that prohibits IP addresses from connecting to the blacklist. If it is empty, no blacklist will be set. If both the blacklist and whitelist use the same value, the blacklist will have higher priority than the whitelist.
-- `debug_log` specifies whether to output debug logs.
+Where:
+- `listen_pipe_server_addr` is the address to listen on externally. If you want to listen on a specific network interface, specify the interface address, e.g., `192.168.2.3:8888`.
+- `white_ip_list` sets the whitelist, allowing only connections from listed IPs. If empty, no whitelist is applied, and all can connect.
+- `black_ip_list` sets the blacklist, preventing connections from IPs in the list. If empty, no blacklist is applied. The blacklist takes precedence over the whitelist if they contain the same values.
+- `debug_log` determines whether to output debug logs.
 
-To start `pipeServer`, just specify the configuration file:
+To start the `pipeServer`, simply specify the configuration file:
+
 ```bash
-$ ./pipeServer --config conf/conf_pipeServer.json
+➜  bin git:(main) ✗ ./goRelay --type pipeServer --config conf/conf_pipeServer.json 
 ```
 
 ### `relayServer`
-`relayServer` is the relay server used to receive and send user data and should be deployed in the internal network environment requested by the client.
 
-Multiple `relayServer` instances can be started to support port reuse, and each instance needs a unique `id`.
+`relayServer` is the relay server used for receiving and sending user data. It needs to be deployed in the intranet environment requested by the client.
 
-To start the service, you need to create a configuration file, for example, `conf_relayServer.json`:
+Multiple `relayServer` instances can be started to support port reuse. Each `relayServer` needs a unique `id`.
+
+Create a configuration file, for example `conf_relayServer.json`:
+
 ```json
 {
     "id": "client1",
@@ -99,12 +103,14 @@ To start the service, you need to create a configuration file, for example, `con
 }
 ```
 
-- `id` is the unique identifier for `relayServer`. When starting multiple instances, ensure the `id` is not duplicated.
+Where:
+- `id` is the unique identifier for the `relayServer`. Ensure it is unique if running multiple instances, and it should be a string with a recommended complexity.
 - `pipe_server_addr` is the address of the `pipeServer`.
-- `listen_relay_server_addr` is the address where `relayServer` listens.
-- `white_ip_list` is the whitelist.
+- `listen_relay_server_addr` is the address the `relayServer` listens on.
+- `white_ip_list` sets the whitelist.
 
-You can create a second configuration file, `conf_relayServer2.json`, for the second `relayServer`:
+You can create a second configuration file, `conf_relayServer2.json`:
+
 ```json
 {
     "id": "client2",
@@ -116,19 +122,23 @@ You can create a second configuration file, `conf_relayServer2.json`, for the se
     "debug_log":true
 }
 ```
-Note that the `id` should not be duplicated, and if running on a single machine, the `listen_relay_server_addr` should not conflict.
 
-To start the service, just specify the corresponding configuration file:
+Ensure that `id` is unique, and if deploying on the same machine, `listen_relay_server_addr` must be unique.
+
+To start the service, specify the configuration file:
+
 ```bash
-$ ./relayServer --config conf/conf_relayServer.json
+➜  bin git:(main) ✗ ./goRelay --type relayServer --config conf/conf_relayServer.json 
 ```
 
 ### `relayClient`
-`relayClient` is the relay client used to receive/send data from the pipe client and real services. It should be deployed in the internal network where the real service resides.
 
-To start this service, configure the `relayServer` with the specified `id`, and based on the `id`, bind to the corresponding real service address. You also need to set the listening port for the pipe client to connect.
+`relayClient` is the relay client used for receiving/sending data from the pipe client and real services. It needs to be deployed in the real service's intranet environment.
 
-To start the service, create a configuration file, for example, `conf_relayClient.json`:
+To start this service, configure the `relayServer` with the corresponding `id` and specify the address of the real service and the port to listen on for connections from the pipe client.
+
+Create a configuration file, such as `conf_relayClient.json`:
+
 ```json
 {
     "listen_relay_client_addr": ":10011",
@@ -149,18 +159,22 @@ To start the service, create a configuration file, for example, `conf_relayClien
 }
 ```
 
-- `listen_relay_client_addr` is the port for the `pipeClient` program to connect.
-- `realServerInfo` is an array of real server information, with each entry containing `id` and `real_Server_Addr` to bind the `id` to the corresponding backend service. The `id` must match the `id` of the `relayServer`. Ensure the `id` is unique to avoid conflicts.
+Where:
+- `listen_relay_client_addr` is the external address to listen on for connections from the `pipeClient`.
+- `realServerInfo` is an array of real server information, mapping each `id` to a real service address. The `id` must match the `id` in the corresponding `relayServer`.
 
-To start the service, just specify the configuration file:
+Start the service by specifying the configuration file:
+
 ```bash
-$ ./relayClient --config conf/conf_relayClient.json
+➜  bin git:(main) ✗ ./goRelay --type relayClient --config conf/conf_relayClient.json 
 ```
 
 ### `pipeClient`
-`pipeClient` is the pipe client used to transfer data from the pipe server and the relay client. It should be deployed in the internal network where the real service resides.
 
-To start this service, create a configuration file, for example, `conf_pipeClient.json`:
+`pipeClient` is the pipe client used for transmitting data from the pipe server and relay client. It should be deployed in the real service's intranet environment.
+
+To start this service, create a configuration file, such as `conf_pipeClient.json`:
+
 ```json
 {
     "pipe_server_addr":"127.0.0.1:8888",
@@ -169,29 +183,34 @@ To start this service, create a configuration file, for example, `conf_pipeClien
 }
 ```
 
+Where:
 - `pipe_server_addr` is the address of the `pipeServer`.
 - `relay_client_addr` is the address of the `relayClient`.
 
-To start the service, just specify the configuration file:
+Start the service by specifying the configuration file:
+
 ```bash
-$ ./pipeClient --config conf/conf_pipeClient.json
+➜  bin git:(main) ✗ ./goRelay --type pipeClient --config conf/conf_pipeClient.json 
 ```
 
 ## Data Encryption
-When you are not the owner of the public server, you must consider the risk of man-in-the-middle attacks. To ensure data security, it is recommended to use data encryption, as shown in the green section of the deployment diagram. Data transmission can be encrypted. However, note that the current version does not implement data encryption but has reserved interfaces for it. You can implement encryption by modifying the `Encode` and `Decode` functions in the `pipeProtocol/enDecode.go` file.
+
+If you are not the owner of the public server, you must consider the risk of man-in-the-middle attacks. To ensure data security, it is recommended to use data encryption, as shown in the green section of the deployment diagram. Data transmission can be encrypted. However, please note that the current version does not implement data encryption, but an interface for this purpose is reserved. You can modify the `Encode` and `Decode` functions in the `pipeProtocol/enDecode.go` file to implement data encryption.
 
 The functions are as follows:
+
 ```go
 func Encode(s []byte) []byte {
-    return s
+	return s
 }
 
 func Decode(s []byte) []byte {
-    return s
+	return s
 }
 ```
 
-- `Encode` will be used for encryption, and `Decode` will be used for decryption.
+Here, `Encode` is used for encryption, and `Decode` is used for decryption.
 
 ## Other
+
 This project does not accept any feature requests.

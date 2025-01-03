@@ -1,24 +1,13 @@
-package main
+package pipeserver_main
 
 import (
-	"flag"
 	"fmt"
 	pipeserver "goRelay/pipeServer/pipeTcpServer"
 	"goRelay/pkg"
 )
 
-func main() {
-	flag.Parse()
+func RunPipeServer(configFile string) {
 
-	if version {
-		fmt.Println("version:", pkg.Version, "buildAt:", pkg.BuildAt, "gitCommit:", pkg.GitCommit)
-		return
-	}
-
-	if help {
-		flag.Usage()
-		return
-	}
 	var config Config
 	if pkg.LoadConfig(configFile, &config) != nil {
 		fmt.Println("read config file error")

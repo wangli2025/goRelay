@@ -38,6 +38,24 @@ func relayWorker(pipeClient net.Conn) {
 		cInfo, isok := clientMap[p.Conn]
 		if !isok {
 			goLog.Error("not fount client conn,error,conn: ", p.Conn)
+
+			var recallP pipeprotocol.ClientProtocolInfo
+			recallP.Conn = p.Conn
+			recallP.CommandID = 100
+			recallP.Id = p.Id
+
+			recallJsonBuf, err := pkg.JsonMarshal(recallP)
+			if err != nil {
+				goLog.Error("recall json marshal error ", err)
+				continue
+			}
+
+			func() {
+				pipeLock.Lock()
+				defer pipeLock.Unlock()
+				pipeprotocol.SendMessage(pipeClient, recallJsonBuf)
+				goLog.Info("send recall info ", p.Id)
+			}()
 			continue
 		}
 

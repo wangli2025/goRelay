@@ -16,7 +16,10 @@
 ## 如何获取可执行文件
 
 ### 从已发布的版本中获取
-可以从已发布版本中得到以下服务器：
+
+可以从已发布版本中得到以下可执行文件：
+
+`goRelay`是一个可执行文件，通过添加`--type`的方式来区分服务器类型。具体的类型可以分为：
 - `relayServer`：中转服务器用于接收和发送数据，需部署在客户端请求的内网环境中，可以部署多个，用于支持端口复用。
 - `pipeServer`：管道服务器用于数据传输，需部署具有公网`IP`的服务器上。
 - `pipeClient`：管道客户端用于用户数据传输，需部署在真实服务所在的内网环境中。
@@ -25,26 +28,20 @@
 ### 编译获取
 将该仓库`clone`下来后，使用`bash build.sh ` + 版本号 进行编译，例如：
 ```bash
-$ bash build.sh v0.0.1
+➜  goRelay git:(main) ✗ bash build.sh v0.0.1
 build project
-go build -ldflags "-X goRelay/pkg.Version=v0.0.1 -X goRelay/pkg.BuildAt=2024-12-28 -X goRelay/pkg.GitCommit=9a4bcb7f2eaf9c6b820f42b6b8758d986b38fd1f" -o ./bin/pipeServer pipeServer/*.go
-go build -ldflags "-X goRelay/pkg.Version=v0.0.1 -X goRelay/pkg.BuildAt=2024-12-28 -X goRelay/pkg.GitCommit=9a4bcb7f2eaf9c6b820f42b6b8758d986b38fd1f" -o ./bin/pipeClient pipeClient/*.go
-go build -ldflags "-X goRelay/pkg.Version=v0.0.1 -X goRelay/pkg.BuildAt=2024-12-28 -X goRelay/pkg.GitCommit=9a4bcb7f2eaf9c6b820f42b6b8758d986b38fd1f" -o ./bin/relayServer relayServer/*.go
-go build -ldflags "-X goRelay/pkg.Version=v0.0.1 -X goRelay/pkg.BuildAt=2024-12-28 -X goRelay/pkg.GitCommit=9a4bcb7f2eaf9c6b820f42b6b8758d986b38fd1f" -o ./bin/relayClient relayClient/*.go
+go build -ldflags "-X goRelay/pkg.Version=v0.0.1 -X goRelay/pkg.BuildAt=2025-01-04 -X goRelay/pkg.GitCommit=9002ae53fff26c433cdcde76abed1781c3cc218a" -o ./bin/goRelay 
 tar zcvf pipeSourcev0.0.1.tar.gz ./bin
 ./bin/
-./bin/pipeClient
-./bin/pipeServer
-./bin/relayClient
-./bin/relayServer
-$
+./bin/goRelay
+➜  goRelay git:(main) ✗ 
 ```
 
 编译完成之后，会在`./bin/`下生成对应的二进制文件。
 ```bash
-$ ls bin/
-pipeClient  pipeServer  relayClient  relayServer
-$ 
+➜  goRelay git:(main) ✗ ls bin/
+goRelay
+➜  goRelay git:(main) ✗ 
 ```
 ## 如何执行
 ### `pipeServer`
@@ -72,7 +69,7 @@ $
 
 启动`pipeServer`，只需要指定配置文件即可，例如：
 ```bash
-$ ./pipeServer --config conf/conf_pipeServer.json
+➜  bin git:(main) ✗ ./goRelay --type pipeServer --config conf/conf_pipeServer.json 
 ```
 
 
@@ -115,7 +112,7 @@ $ ./pipeServer --config conf/conf_pipeServer.json
 
 指定配置文件即可启动该服务。
 ```bash
-$ ./relayServer --config conf/conf_relayServer.json
+➜  bin git:(main) ✗ ./goRelay --type relayServer --config conf/conf_relayServer.json 
 ```
 
 ### `relayClient`
@@ -149,14 +146,14 @@ $ ./relayServer --config conf/conf_relayServer.json
 
 启动该服务只需要指定相应的配置文件即可。
 ```bash
-$ ./relayClient --config conf/conf_relayClient.json
+➜  bin git:(main) ✗ ./goRelay --type relayClient --config conf/conf_relayClient.json 
 ```
 
 
 ### `pipeClient`
 `pipeClient`是管道客户端，用于传输来自管道服务器的数据，以及中转客户端的数据，该服务需要部署在真实服务所在的内网环境中。
 
-启动该服务，需要创建配置文件，比如：`conf_relayClient.json`：
+启动该服务，需要创建配置文件，比如：`conf_pipeClient.json`：
 ```json
 {
     "pipe_server_addr":"127.0.0.1:8888",
@@ -170,7 +167,7 @@ $ ./relayClient --config conf/conf_relayClient.json
 
 只需要指定配置文件，即可启动该服务。
 ```bash
-$ ./pipeClient --config conf/conf_pipeClient.json
+➜  bin git:(main) ✗ ./goRelay --type pipeClient --config conf/conf_pipeClient.json 
 ```
 
 ## 数据加密

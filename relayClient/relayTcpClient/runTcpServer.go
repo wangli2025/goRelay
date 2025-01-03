@@ -79,6 +79,12 @@ func worker(conn net.Conn, whitelist []string, realServerInfoMap map[string]stri
 		}
 		cInfo, _ := clientConnections[p.Conn]
 
+		if p.CommandID == 100 {
+			goLog.Info("close ", p.Id, " connecttion, commandid: ", p.CommandID)
+			cInfo.Conn.Close()
+			continue
+		}
+
 		sendLen := 0
 		for sendLen < len(p.Buf) {
 			n, err := cInfo.Conn.Write(p.Buf[sendLen:])
