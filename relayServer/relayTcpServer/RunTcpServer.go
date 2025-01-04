@@ -88,7 +88,13 @@ func worker(conn net.Conn, whitelist []string, id string) {
 			pipeprotocol.SendMessage(pipeClient, jsonBuf)
 		}()
 
-		cInfo := clientMap[conn.RemoteAddr().String()]
+		cInfo := func(pConn string) pipeprotocol.ClientInfo {
+			clientMapLock.Lock()
+			defer clientMapLock.Unlock()
+
+			return clientMap[pConn]
+		}(conn.RemoteAddr().String())
+
 		cInfo.Time = time.Now().Unix()
 
 		func() {

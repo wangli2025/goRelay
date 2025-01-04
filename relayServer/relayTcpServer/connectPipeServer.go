@@ -35,9 +35,15 @@ func relayWorker(pipeClient net.Conn) {
 		goLog.Debug(p.Conn, " The message has returned.")
 		goLog.Debug("p.id: ", p.Id)
 
-		cInfo, isok := clientMap[p.Conn]
+		cInfo, isok := func(pConn string) (pipeprotocol.ClientInfo, bool) {
+			clientMapLock.Lock()
+			defer clientMapLock.Unlock()
+			cINfo, isok := clientMap[pConn]
+			return cINfo, isok
+		}(p.Conn)
+
 		if !isok {
-			goLog.Error("not fount client conn,error,conn: ", p.Conn)
+			goLog.Debug("not fount client conn,error,conn: ", p.Conn)
 
 			var recallP pipeprotocol.ClientProtocolInfo
 			recallP.Conn = p.Conn
@@ -54,7 +60,7 @@ func relayWorker(pipeClient net.Conn) {
 				pipeLock.Lock()
 				defer pipeLock.Unlock()
 				pipeprotocol.SendMessage(pipeClient, recallJsonBuf)
-				goLog.Info("send recall info ", p.Id)
+				goLog.Debug("send recall info ", p.Id)
 			}()
 			continue
 		}
