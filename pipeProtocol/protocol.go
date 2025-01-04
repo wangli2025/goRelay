@@ -77,11 +77,12 @@ func RecvMessgae(conn net.Conn) []byte {
 		recvLen += n
 	}
 
-	deBuf := Decode(buf[:])
-	deCompressBuf := dataDecompressForGzip(deBuf)
+	deCompressBuf := dataDecompressForGzip(buf[:])
 	if nil == deCompressBuf {
 		return nil
 	}
 
-	return deCompressBuf
+	deBuf := Decode(deCompressBuf)
+
+	return deBuf
 }
