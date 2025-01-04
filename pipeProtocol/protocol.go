@@ -19,7 +19,13 @@ type ClientInfo struct {
 
 func SendMessage(conn net.Conn, message []byte) {
 
-	msg := Encode(message)
+	enMsgs := Encode(message)
+
+	msg := dataCompressForGzip(enMsgs)
+	if msg == nil {
+		return
+	}
+
 	msgLen := uint32(len(msg))
 
 	headBuf := make([]byte, headerLen)
@@ -72,6 +78,10 @@ func RecvMessgae(conn net.Conn) []byte {
 	}
 
 	deBuf := Decode(buf[:])
+	deCompressBuf := dataDecompressForGzip(deBuf)
+	if nil == deCompressBuf {
+		return nil
+	}
 
-	return deBuf
+	return deCompressBuf
 }
