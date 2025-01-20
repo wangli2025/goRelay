@@ -1,9 +1,17 @@
 #!/bin/bash
 
 gitLog=$(git log -1 --pretty=format:"%H")
-#gitLog=9a4bcb7f2eaf9c6b820f42b6b8758d986b38fd1f
 version=$1
 nowDate=$(date +"%F")
 
-make VERSION=${version} BuildAt=${nowDate} GITCOMMIT=${gitLog}
+platInfo=("linux/amd64" "linux/arm64" "windows/amd64")
 
+for i in ${platInfo[@]}
+do
+    os=$(echo ${i} | awk -F"/" '{print $1}')
+    arch=$(echo ${i} | awk -F"/" '{print $2}')
+
+    make GoOS=${os} GoArch=${arch} VERSION=${version} BuildAt=${nowDate} GITCOMMIT=${gitLog}
+done
+
+tar zcvf exec_goRelay_${version}.tar.gz bin

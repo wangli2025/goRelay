@@ -2,9 +2,10 @@
 VERSION ?= "0.0.1"
 GITCOMMIT ?= ""
 BuildAt ?= ""
+GoOS ?= "linux"
+GoArch ?= "amd64"
 
 BIN_DIR = ./bin
-ARCHIVE_NAME := pipeSource$(VERSION).tar.gz
 
 
 all: $(BIN_DIR) build
@@ -15,10 +16,10 @@ $(BIN_DIR):
 
 build:
 	@echo "build project"
-	go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.BuildAt=$(BuildAt) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/goRelay 
-	tar zcvf $(ARCHIVE_NAME) $(BIN_DIR)
+	CGO_ENABLED=0 GOOS=$(GoOS) GOARCH=$(GoArch) go build -ldflags "-X goRelay/pkg.Version=$(VERSION) -X goRelay/pkg.BuildAt=$(BuildAt) -X goRelay/pkg.GitCommit=$(GITCOMMIT)" -o $(BIN_DIR)/goRelay_$(GoOS)_$(GoArch)
 
 clean:
 	@echo "cleaning up..."
-	rm -f $(BIN_DIR)/goRelay
+	rm -f $(BIN_DIR)/goRela*
+	rm -f exec_goRelay_*
 
